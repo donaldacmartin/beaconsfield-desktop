@@ -9,8 +9,8 @@ Functions:
 
 from ctypes import windll
 from logging import debug, info
-from os import access, system, R_OK, W_OK
-from os.path import isdir
+from os import access, listdir, remove, system, R_OK, W_OK
+from os.path import isdir, join
 from platform import system as platform_sys
 
 from beaconsfield.model import SysException
@@ -44,6 +44,16 @@ def check_sys(storage_dir: str):
 
     info("Checking system")
     return _check_os() and _check_dir(storage_dir)
+
+
+def clear_dir(storage_dir: str):
+    """Wipe out the old wallpapers"""
+
+    info("Clearing out %s" % storage_dir)
+    images = listdir(storage_dir)
+    paths = [join(storage_dir, image) for image in images]
+    info("Deleting %d file(s)" % len(paths))
+    list(map(remove, paths))
 
 
 def set_wallpaper(wallpaper: str):

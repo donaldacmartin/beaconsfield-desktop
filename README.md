@@ -1,5 +1,7 @@
 # Beaconsfield
 
+[![Build Status](https://ci.donald-martin.ca/buildStatus/icon?job=beaconsfield-desktop%2Fmain)](https://ci.donald-martin.ca/job/beaconsfield-desktop/job/main/)
+
 ## Background
 
 Pull down the top images from /r/wallpapers or randomly select one and set it

@@ -18,11 +18,11 @@ from typing import List
 from beaconsfield.model import LOG_FORMAT, BeaconsfieldException
 from beaconsfield.reddit import download, get_top_wallpapers
 from beaconsfield.storage import get_saved_wallpapers
-from beaconsfield.sys import check_sys, set_wallpaper
+from beaconsfield.sys import check_sys, clear_dir, set_wallpaper
 
 
 DEFAULT_DIR = Path.home()
-DEFAULT_NUM = 10
+DEFAULT_NUM = 20
 
 
 def _filter_saved_wps(saved_wps: List[str], reddit_wps: List[str]) -> List[str]:
@@ -30,16 +30,17 @@ def _filter_saved_wps(saved_wps: List[str], reddit_wps: List[str]) -> List[str]:
     return [wp for wp in reddit_wps if wp.split("/")[-1] not in saved_names]
 
 
-def refresh_images(storage_dir: str, num_wallpapers: int):
+def refresh_images(storage_dir: str):
     """Call Reddit for new wallpapers and put them in the provided directory"""
 
     try:
         info("Refreshing images")
         check_sys(storage_dir)
+        clear_dir(storage_dir)
         saved_wallpapers = get_saved_wallpapers(storage_dir)
         top_wallpapers = get_top_wallpapers()
         new_wallpapers = _filter_saved_wps(saved_wallpapers, top_wallpapers)
-        map(lambda x: download(x, storage_dir), new_wallpapers[:num_wallpapers])
+        list(map(lambda x: download(x, storage_dir), new_wallpapers[:DEFAULT_NUM]))
     except BeaconsfieldException as beaconsfield_exception:
         error(beaconsfield_exception)
 
@@ -57,13 +58,13 @@ def set_new_wallpaper(storage_dir: str):
         error(beaconsfield_exception)
 
 
-def main(action: str, storage_dir: str, num_wallpapers: int):
+def main(action: str, storage_dir: str):
     """The main application"""
 
     if action == "set":
         set_new_wallpaper(storage_dir)
     elif action == "refresh":
-        refresh_images(storage_dir, num_wallpapers)
+        refresh_images(storage_dir)
     else:
         error("Unknown action %s" % action)
 
@@ -81,12 +82,5 @@ if __name__ == "__main__":
         default=DEFAULT_DIR,
     )
 
-    parser.add_argument(
-        "--num-wallpapers",
-        type=int,
-        help="How many wallpapers to download",
-        default=DEFAULT_NUM,
-    )
-
     args = parser.parse_args()
-    main(args.action.lower(), args.storage_dir, args.num_wallpapers)
+    main(args.action.lower(), args.storage_dir)
