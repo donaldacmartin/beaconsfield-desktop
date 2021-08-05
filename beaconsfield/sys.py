@@ -7,7 +7,8 @@ Functions:
     set_wallpaper(str)
 """
 
-from ctypes import windll
+import ctypes
+
 from logging import debug, info
 from os import access, listdir, remove, system, R_OK, W_OK
 from os.path import isdir, join
@@ -64,7 +65,7 @@ def set_wallpaper(wallpaper: str):
 
     if operating_system == "Windows":
         debug("Windows detected")
-        windll.user32.SystemParametersInfoW(20, 0, wallpaper, 3)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, wallpaper, 3)
     elif operating_system == "Linux":
         debug("Linux detected")
         system("gsettings set org.gnome.desktop.background picture-uri %s" % wallpaper)
